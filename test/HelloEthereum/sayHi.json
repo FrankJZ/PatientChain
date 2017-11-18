@@ -1,0 +1,139 @@
+[
+    {
+        "name": "should allow a registered person to say hi.",
+        "initialConditions": [
+            "cnt.register(...config.person, {from: config.account})"
+        ],
+        "executions": [
+            {
+                "type": "assert",
+                "cmd": "cnt.isPersonRegistered(config.account)",
+                "value": ":result",
+                "expected": "true",
+                "error": "The person should be already registered initially."
+            },
+            {
+                "type": "cmd",
+                "cmd": "cnt.sayHi({from: config.account})",
+                "events": [
+                    {
+                        "name": "HiEthereum",
+                        "args": {
+                            "account": "*",
+                            "name": "config.name",
+                            "message": "*"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "should not allow a registered person to say hi too frequently.",
+        "initialConditions": [
+            "cnt.register(...config.person, {from: config.account})"
+        ],
+        "executions": [
+            {
+                "type": "assert",
+                "cmd": "cnt.isPersonRegistered(config.account)",
+                "value": ":result",
+                "expected": "true",
+                "error": "The person should be already registered initially."
+            },
+            {
+                "type": "cmd",
+                "cmd": "cnt.sayHi({from: config.account})",
+                "events": [
+                    {
+                        "name": "HiEthereum",
+                        "args": {
+                            "account": "*",
+                            "name": "config.name",
+                            "message": "*"
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "cmd",
+                "cmd": "cnt.sayHi({from: config.account})",
+                "throw": true
+            }
+        ]
+    },
+    {
+        "name": "should allow a registered person to say hi again after 10 seconds.",
+        "initialConditions": [
+            "cnt.register(...config.person, {from: config.account})",
+            "cnt.register(...config.anotherPerson, {from: config.anotherAccount})"
+        ],
+        "executions": [
+            {
+                "type": "assert",
+                "cmd": "cnt.isPersonRegistered(config.account)",
+                "value": ":result",
+                "expected": "true",
+                "error": "The person should be already registered initially."
+            },
+            {
+                "type": "assert",
+                "cmd": "cnt.isPersonRegistered(config.anotherAccount)",
+                "value": ":result",
+                "expected": "true",
+                "error": "Another person should be already registered initially."
+            },
+            {
+                "type": "cmd",
+                "cmd": "cnt.sayHi({from: config.account})",
+                "events": [
+                    {
+                        "name": "HiEthereum",
+                        "args": {
+                            "account": "*",
+                            "name": "config.name",
+                            "message": "*"
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "cmd",
+                "cmd": "cnt.sayHi({from: config.account})",
+                "throw": true
+            },
+            {
+                "type": "wait",
+                "duration": 10
+            },
+            {
+                "type": "cmd",
+                "cmd": "cnt.sayHi({from: config.anotherAccount})",
+                "events": [
+                    {
+                        "name": "HiEthereum",
+                        "args": {
+                            "account": "config.anotherAccount",
+                            "name": "*",
+                            "message": "*"
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "cmd",
+                "cmd": "cnt.sayHi({from: config.account})",
+                "events": [
+                    {
+                        "name": "HiEthereum",
+                        "args": {
+                            "account": "config.account",
+                            "name": "config.name",
+                            "message": "*"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+]
